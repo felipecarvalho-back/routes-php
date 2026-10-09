@@ -8,7 +8,7 @@ $url = $_SERVER['REQUEST_URI'];
 
 $rota = new Routes($url);
 
-$rota->get("sobre");
-$rota->get("home");
+$rota->get('/', 'HomeController', 'home');
+$rota->get('/sobre', 'HomeController', 'sobre');
 
 $rota->run();
