@@ -4,13 +4,15 @@ declare(strict_types=1);
 
 namespace Src\Controller;
 
-class HomeController{
+use Src\controller\Controller;
+
+class HomeController extends Controller{
     public function home(){
-        echo "Home";
+        parent::view('home');
     }
 
     public function sobre(){
-        echo "Sobre";
+        parent::view('sobre');
     }
 }
 

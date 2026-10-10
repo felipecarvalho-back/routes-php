@@ -26,20 +26,33 @@ class Routes
             return false;
         }
 
-        $this->routes[$rotaNormalizada] = ['controller' => $arquivo, 'action' => $action];
+        $this->routes[$rotaNormalizada] = ['controller' => $controller, 'action' => $action];
         return true;
     }
 
     public function run(): void
     {
-        print_r($this->routes[$this->url]);
-        if (isset($this->routes[$this->url])) {
-            // include $this->routes[$this->url];
-
-            // return;
+        if (!isset($this->routes[$this->url])) {
+            http_response_code(404);
+            echo "404 - Rota não encontrada";
+            return;
         }
 
-        // http_response_code(404);
-        // echo "404 - Rota não encontrada";
+        $arquivo = __DIR__ . "/../controller/{$this->routes[$this->url]['controller']}.php";
+
+        require_once $arquivo;
+
+        $nomeController = $this->routes[$this->url]['controller'];
+        $nomeCompletoDaClasse = "\\Src\\Controller\\" . $nomeController;
+
+        $class = new $nomeCompletoDaClasse();
+
+        if (method_exists($class, $this->routes[$this->url]['action'])) {
+            $funcao = $this->routes[$this->url]['action'];
+            $class->$funcao();
+        } else {
+            http_response_code(500);
+            echo "Erro: O método '$funcao' não existe no controller '$nomeController'.";
+        }
     }
 }

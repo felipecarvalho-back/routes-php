@@ -4,4 +4,4 @@ echo 'Pagina sobre';
 
 ?>
 
-<a href="/home">Ir pra home</a>
+<a href="/">Ir pra home</a>
