@@ -6,7 +6,7 @@ namespace Src\controller;
 
 
 abstract class Controller{
-    protected function view(string $view){
+    protected function view(string $view, array $dados = []){
         $arquivo = __DIR__ . "/../view/$view.php";
 
         if(!file_exists($arquivo)){
@@ -14,6 +14,7 @@ abstract class Controller{
             echo "Erro: O arquivo '$arquivo' não existe.";
         }
 
+        extract($dados);
         include_once $arquivo;
     }
 }
