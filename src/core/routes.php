@@ -26,7 +26,23 @@ class Routes
             return false;
         }
 
-        $this->routes[$rotaNormalizada] = ['controller' => $controller, 'action' => $action];
+        $this->routes[$rotaNormalizada]['GET'] = ['controller' => $controller, 'action' => $action];
+        return true;
+    }
+
+    public function post(string $rota, string $controller, string $action): bool
+    {
+        $rotaNormalizada = trim($rota, '/');
+
+        $arquivo = __DIR__ . "/../controller/{$controller}.php";
+        $action = strtolower($action);
+
+        if (!file_exists($arquivo)) {
+            echo "O arquivo não existe: {$arquivo}";
+            return false;
+        }
+
+        $this->routes[$rotaNormalizada]['POST'] = ['controller' => $controller, 'action' => $action];
         return true;
     }
 
@@ -38,21 +54,23 @@ class Routes
             return;
         }
 
-        $arquivo = __DIR__ . "/../controller/{$this->routes[$this->url]['controller']}.php";
+        if ($this->routes[$this->url][$_SERVER['REQUEST_METHOD']]) {
+            $arquivo = __DIR__ . "/../controller/{$this->routes[$this->url][$_SERVER['REQUEST_METHOD']]['controller']}.php";
 
-        require_once $arquivo;
+            require_once $arquivo;
 
-        $nomeController = $this->routes[$this->url]['controller'];
-        $nomeCompletoDaClasse = "\\Src\\Controller\\" . $nomeController;
+            $nomeController = $this->routes[$this->url][$_SERVER['REQUEST_METHOD']]['controller'];
+            $nomeCompletoDaClasse = "\\Src\\Controller\\" . $nomeController;
 
-        $class = new $nomeCompletoDaClasse();
+            $class = new $nomeCompletoDaClasse();
 
-        if (method_exists($class, $this->routes[$this->url]['action'])) {
-            $funcao = $this->routes[$this->url]['action'];
-            $class->$funcao();
-        } else {
-            http_response_code(500);
-            echo "Erro: O método '$funcao' não existe no controller '$nomeController'.";
+            if (method_exists($class, $this->routes[$this->url][$_SERVER['REQUEST_METHOD']]['action'])) {
+                $funcao = $this->routes[$this->url][$_SERVER['REQUEST_METHOD']]['action'];
+                $class->$funcao();
+            } else {
+                http_response_code(500);
+                echo "Erro: O método '$funcao' não existe no controller '$nomeController'.";
+            }
         }
     }
 }

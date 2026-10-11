@@ -6,8 +6,8 @@ Este documento reúne sugestões e melhorias recomendadas para expandir a estrut
 
 ## 1. Motor de Rotas (`Src\Core\Routes`)
 
-- [ ] **Suporte a múltiplos verbos HTTP**
-  - Implementar métodos como `$rota->post(...)`, `$rota->put(...)` e `$rota->delete(...)`.
+- [x] **Suporte a múltiplos verbos HTTP**
+  - Implementar métodos como `$rota->post(...)`.
   - Validar a requisição contra `$_SERVER['REQUEST_METHOD']`.
 - [ ] **Parâmetros dinâmicos na URL**
   - Permitir rotas com parâmetros, por exemplo: `/usuario/{id}` ou `/post/{slug}`.
@@ -28,7 +28,7 @@ Este documento reúne sugestões e melhorias recomendadas para expandir a estrut
 
 ## 2. Controllers e Camada de Apresentação (Views)
 
-- [ ] **Passagem de dados para as Views**
+- [x] **Passagem de dados para as Views**
   - Permitir passar arrays de variáveis no método `view()` de `Src\Controller\Controller`:
     ```php
     $this->view('perfil', ['nome' => 'Felipe', 'idade' => 20]);
@@ -74,7 +74,7 @@ Este documento reúne sugestões e melhorias recomendadas para expandir a estrut
 
 ## 6. Ferramentas de Desenvolvimento e Tratamento de Erros
 
-- [ ] **Scripts no `composer.json`**
+- [x] **Scripts no `composer.json`**
   - Adicionar atalho para subir o servidor embutido do PHP:
     ```json
     "scripts": {
