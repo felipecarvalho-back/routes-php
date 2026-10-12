@@ -54,6 +54,12 @@ class Routes
             return;
         }
 
+        if (!isset($this->routes[$this->url][$_SERVER['REQUEST_METHOD']])) {
+            http_response_code(405);
+            echo "405 - O metodo não existe na rota";
+            return;
+        }
+
         if ($this->routes[$this->url][$_SERVER['REQUEST_METHOD']]) {
             $arquivo = __DIR__ . "/../controller/{$this->routes[$this->url][$_SERVER['REQUEST_METHOD']]['controller']}.php";
 
