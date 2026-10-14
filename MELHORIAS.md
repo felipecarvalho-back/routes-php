@@ -9,7 +9,7 @@ Este documento reúne sugestões e melhorias recomendadas para expandir a estrut
 - [x] **Suporte a múltiplos verbos HTTP**
   - Implementar métodos como `$rota->post(...)`.
   - Validar a requisição contra `$_SERVER['REQUEST_METHOD']`.
-- [ ] **Parâmetros dinâmicos na URL**
+- [x] **Parâmetros dinâmicos na URL**
   - Permitir rotas com parâmetros, por exemplo: `/usuario/{id}` ou `/post/{slug}`.
   - Utilizar expressões regulares (`preg_match`) para casar as URLs e repassar os argumentos capturados aos métodos do controller.
 - [ ] **Suporte a funções anônimas (Closures/Callbacks)**

@@ -48,35 +48,63 @@ class Routes
 
     public function run(): void
     {
-        if (!isset($this->routes[$this->url])) {
+        $metodoHttp = $_SERVER['REQUEST_METHOD'];
+        $rotaEncontrada = null;
+
+        foreach ($this->routes as $rotaCadastrada => $metodos) {
+            $rotaRegex = preg_replace('#/\{[^}]+\}#', '(?:/([a-zA-Z0-9_-]+))?', $rotaCadastrada);
+            $regex = '#^' . $rotaRegex . '/?$#';
+
+            if (preg_match($regex, $this->url, $matches)) {
+                if (isset($metodos[$metodoHttp])) {
+
+                    $request = null;
+
+                    if ($metodoHttp == 'GET') {
+                        $parametroUrl = isset($matches[1]) ? $matches[1] : null;
+                        $request = new Request($parametroUrl);
+                    }
+
+                    if ($metodoHttp == 'POST') {
+                        $request = new Request(null, $_POST);
+                    }
+
+                    $rotaEncontrada = $metodos[$metodoHttp];
+                    break;
+                } else {
+                    break;
+                }
+            }
+        }
+
+
+        if (!$rotaEncontrada) {
             http_response_code(404);
             echo "404 - Rota não encontrada";
             return;
         }
 
-        if (!isset($this->routes[$this->url][$_SERVER['REQUEST_METHOD']])) {
-            http_response_code(405);
-            echo "405 - O metodo não existe na rota";
+        $arquivo = __DIR__ . "/../controller/{$rotaEncontrada['controller']}.php";
+
+        if (!file_exists($arquivo)) {
+            http_response_code(500);
+            echo "O arquivo do controller não existe: {$arquivo}";
             return;
         }
 
-        if ($this->routes[$this->url][$_SERVER['REQUEST_METHOD']]) {
-            $arquivo = __DIR__ . "/../controller/{$this->routes[$this->url][$_SERVER['REQUEST_METHOD']]['controller']}.php";
+        require_once $arquivo;
 
-            require_once $arquivo;
+        $nomeController = $rotaEncontrada['controller'];
+        $nomeCompletoDaClasse = "\\Src\\Controller\\" . $nomeController;
+        $class = new $nomeCompletoDaClasse();
 
-            $nomeController = $this->routes[$this->url][$_SERVER['REQUEST_METHOD']]['controller'];
-            $nomeCompletoDaClasse = "\\Src\\Controller\\" . $nomeController;
+        $funcao = $rotaEncontrada['action'];
 
-            $class = new $nomeCompletoDaClasse();
-
-            if (method_exists($class, $this->routes[$this->url][$_SERVER['REQUEST_METHOD']]['action'])) {
-                $funcao = $this->routes[$this->url][$_SERVER['REQUEST_METHOD']]['action'];
-                $class->$funcao();
-            } else {
-                http_response_code(500);
-                echo "Erro: O método '$funcao' não existe no controller '$nomeController'.";
-            }
+        if (method_exists($class, $funcao)) {
+            $class->$funcao($request);
+        } else {
+            http_response_code(500);
+            echo "Erro: O método '$funcao' não existe no controller '$nomeController'.";
         }
     }
 }
