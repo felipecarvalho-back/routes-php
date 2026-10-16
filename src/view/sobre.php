@@ -4,6 +4,7 @@ echo 'Pagina sobre';
 
 ?>
 
+
 <form action="/sobre" method="POST">
     <label for="nome">Nome: </label>
     <input type="text" name="nome" id="nome">

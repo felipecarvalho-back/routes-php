@@ -9,7 +9,7 @@ $url = $_SERVER['REQUEST_URI'];
 $rota = new Routes($url);
 
 $rota->get('/', 'HomeController', 'home');
-$rota->get('/home/{texto}', 'HomeController', 'parametro');
+$rota->get('/home/{text}/{id}', 'HomeController', 'parametro');
 $rota->post('/', 'HomeController', 'create');
 $rota->get('/sobre', 'HomeController', 'sobre');
 $rota->post('/sobre', 'HomeController', 'teste');

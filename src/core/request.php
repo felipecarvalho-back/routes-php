@@ -7,27 +7,28 @@ namespace Src\Core;
 class Request
 {
 
-    private mixed $parametro = null;
+    private mixed $parametros = [];
     private array $posts = [];
 
-    public function __construct(mixed $parametro = null, array $posts = [])
+    public function __construct(array $parametros = [], array $posts = [])
     {
-        $this->parametro = $parametro;
+        $this->parametros = $parametros;
         $this->posts = $posts;
     }
 
-    public function param(): mixed
+    public function param(?string $campo = null): mixed
     {
-        return $this->parametro;
+        if ($campo === null) {
+            return $this->parametros;
+        }
+        return $this->parametros[$campo] ?? null;
     }
 
-    public function post(): array
+    public function post(?string $campo = null): mixed
     {
-        $dados = [];
-        foreach ($this->posts as $rotulo => $post) {
-            $dados[$rotulo] = $post;
+        if ($campo === null) {
+            return $this->posts;
         }
-
-        return $dados;
+        return $this->posts[$campo] ?? null;
     }
 }
