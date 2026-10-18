@@ -18,7 +18,8 @@ class Routes
     {
         if ($this->addRoute('GET', $rota, $controller, $action)) {
             return true;
-        };
+        }
+        ;
 
         return false;
     }
@@ -27,7 +28,8 @@ class Routes
     {
         if ($this->addRoute('POST', $rota, $controller, $action)) {
             return true;
-        };
+        }
+        ;
 
         return false;
     }
@@ -36,10 +38,10 @@ class Routes
     {
         $rotaNormalizada = trim($rota, '/');
 
-        $arquivo = __DIR__ . "/../controller/{$controller}.php";
+        $arquivo = __DIR__."/../controller/{$controller}.php";
         $action = strtolower($action);
 
-        if (!file_exists($arquivo)) {
+        if (! file_exists($arquivo)) {
             echo "O arquivo não existe: {$arquivo}";
             return false;
         }
@@ -53,37 +55,39 @@ class Routes
         $metodoHttp = $_SERVER['REQUEST_METHOD'];
         $rotaEncontrada = null;
         $request = '';
+        $parametroUrl = [];
 
         foreach ($this->routes as $rotaCadastrada => $metodos) {
             $rotaRegex = preg_replace('#/\{[^}]+\}#', '(?:/([a-zA-Z0-9_-]+))?', $rotaCadastrada);
-            $regex = '#^' . $rotaRegex . '/?$#';
+            $regex = '#^'.$rotaRegex.'/?$#';
             if (preg_match($regex, $this->url, $matches)) {
                 if (isset($metodos[$metodoHttp])) {
-                    preg_match_all('/{([^}]+)}/', $rotaCadastrada, $indices);
-                    unset($indices[0]);
-                    $indices = array_values(array_merge(...$indices));
+                    if (preg_match_all('/{([^}]+)}/', $rotaCadastrada, $indices)) {
+                        unset($indices[0]);
+                        $indices = array_values(array_merge(...$indices));
 
-                    unset($matches[0]);
-                    $matches = array_values($matches);
+                        unset($matches[0]);
+                        $matches = array_values($matches);
 
-                    $parametroUrl = array_combine($indices, $matches);
-
+                        $parametroUrl = array_combine($indices, $matches) ?? [];
+                    }
                     $request = new Request($parametroUrl, $_POST);
                     $rotaEncontrada = $metodos[$metodoHttp];
                 }
             }
         }
 
-        if (!$rotaEncontrada) {
+        die();
+        if (! $rotaEncontrada) {
             http_response_code(404);
             echo "404 - Rota não encontrada";
             return;
         }
 
         $nomeController = $rotaEncontrada['controller'];
-        $nomeCompletoDaClasse = "\\Src\\Controller\\" . $nomeController;
+        $nomeCompletoDaClasse = "\\Src\\Controller\\".$nomeController;
 
-        if (!class_exists($nomeCompletoDaClasse)) {
+        if (! class_exists($nomeCompletoDaClasse)) {
             http_response_code(500);
             echo "Controller '$nomeCompletoDaClasse' não encontrado.";
             return;

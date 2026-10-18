@@ -1,3 +1,3 @@
 <?php
 
-$rota->get('/', 'HomeController', 'home');
+$rota->get('/home/{id}', 'HomeController', 'home');

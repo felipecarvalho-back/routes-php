@@ -11,8 +11,8 @@ class HomeController extends Controller
 {
     public function home()
     {
-        $u = new Usuario();
-        $u->select();
-        // parent::view('home');
+        // $u = new Usuario();
+        // $u->select();
+        parent::view('home');
     }
 }
