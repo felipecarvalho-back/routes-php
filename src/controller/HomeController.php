@@ -5,14 +5,21 @@ declare(strict_types=1);
 namespace Src\Controller;
 
 use Src\controller\Controller;
+use Src\Core\Request;
 use Src\Model\Usuario;
 
 class HomeController extends Controller
 {
-    public function home()
+    public function __construct(private Usuario $usuario)
+    {
+    }
+
+    public function home(Request $request)
     {
         // $u = new Usuario();
-        // $u->select();
+        $this->usuario->select();
+        dd($request->param());
+        // die();
         parent::view('home');
     }
 }

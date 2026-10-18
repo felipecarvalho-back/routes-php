@@ -16,37 +16,23 @@ class Routes
 
     public function get(string $rota, string $controller, string $action): bool
     {
-        if ($this->addRoute('GET', $rota, $controller, $action)) {
-            return true;
-        }
-        ;
-
-        return false;
+        return $this->addRoute('GET', $rota, $controller, $action);
     }
 
     public function post(string $rota, string $controller, string $action): bool
     {
-        if ($this->addRoute('POST', $rota, $controller, $action)) {
-            return true;
-        }
-        ;
-
-        return false;
+        return $this->addRoute('POST', $rota, $controller, $action);
     }
 
     public function addRoute(string $metodo, string $rota, string $controller, string $action): bool
     {
         $rotaNormalizada = trim($rota, '/');
 
-        $arquivo = __DIR__."/../controller/{$controller}.php";
-        $action = strtolower($action);
+        $this->routes[$rotaNormalizada][$metodo] = [
+            'controller' => $controller,
+            'action' => strtolower($action),
+        ];
 
-        if (! file_exists($arquivo)) {
-            echo "O arquivo não existe: {$arquivo}";
-            return false;
-        }
-
-        $this->routes[$rotaNormalizada][$metodo] = ['controller' => $controller, 'action' => $action];
         return true;
     }
 
@@ -54,32 +40,16 @@ class Routes
     {
         $metodoHttp = $_SERVER['REQUEST_METHOD'];
         $rotaEncontrada = null;
-        $request = '';
         $parametroUrl = [];
 
         foreach ($this->routes as $rotaCadastrada => $metodos) {
-            $rotaRegex = preg_replace('#/\{[^}]+\}#', '(?:/([a-zA-Z0-9_-]+))?', $rotaCadastrada);
-            $regex = '#^'.$rotaRegex.'/?$#';
-            if (preg_match($regex, $this->url, $matches)) {
+            $rotaRegex = preg_replace('/\{([^}]+)\}/', '(?P<$1>[a-zA-Z0-9_-]+)', $rotaCadastrada);
+
+            if (preg_match('#^' . $rotaRegex . '$#', $this->url, $matches)) {
                 if (isset($metodos[$metodoHttp])) {
-                    if (preg_match_all('/{([^}]+)}/', $rotaCadastrada, $indices)) {
-                        unset($indices[0]);
-                        $indices = array_values(array_merge(...$indices));
-
-                        unset($matches[0]);
-                        $matches = array_values($matches);
-
-                        if (count($indices) != count($matches)) {
-                            http_response_code(404);
-                            echo "404 - Rota não encontrada";
-                            return;
-                        }
-
-                        $parametroUrl = array_combine($indices, $matches);
-                    }
-
-                    $request = new Request($parametroUrl, $_POST);
+                    $parametroUrl = array_filter($matches, 'is_string', ARRAY_FILTER_USE_KEY);
                     $rotaEncontrada = $metodos[$metodoHttp];
+                    break;
                 }
             }
         }
@@ -91,23 +61,25 @@ class Routes
         }
 
         $nomeController = $rotaEncontrada['controller'];
-        $nomeCompletoDaClasse = "\\Src\\Controller\\".$nomeController;
-
-        if (! class_exists($nomeCompletoDaClasse)) {
-            http_response_code(500);
-            echo "Controller '$nomeCompletoDaClasse' não encontrado.";
-            return;
-        }
-
-        $class = new $nomeCompletoDaClasse();
-
+        $nomeCompletoDaClasse = "\\Src\\Controller\\" . $nomeController;
         $funcao = $rotaEncontrada['action'];
 
-        if (method_exists($class, $funcao)) {
-            $class->$funcao($request);
-        } else {
+        try {
+            $container = new Container();
+            $controller = $container->build($nomeCompletoDaClasse);
+
+            if (! method_exists($controller, $funcao)) {
+                http_response_code(500);
+                echo "Erro: O método '$funcao' não existe no controller '$nomeController'.";
+                return;
+            }
+
+            $request = new Request($parametroUrl, $_POST);
+
+            $controller->$funcao($request);
+        } catch (\Throwable $e) {
             http_response_code(500);
-            echo "Erro: O método '$funcao' não existe no controller '$nomeController'.";
+            echo "Erro ao processar requisição: " . $e->getMessage();
         }
     }
 }

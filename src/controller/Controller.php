@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Src\controller;
 
-
 abstract class Controller{
     protected function view(string $view, array $dados = []){
         $arquivo = __DIR__ . "/../view/$view.php";
