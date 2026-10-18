@@ -12,7 +12,7 @@
     }
   ],
   "scripts": {
-    "start": "php -S localhost:8000 index.php"
+    "start": "php -S localhost:8000 public/index.php"
   },
   "config": {
     "process-timeout": 0

@@ -9,9 +9,9 @@ class Routes
     private string $url = '';
     private array $routes = [];
 
-    public function __construct(string $url)
+    public function __construct()
     {
-        $this->url = trim(parse_url($url, PHP_URL_PATH) ?? '', '/');
+        $this->url = trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) ?? '', '/');
     }
 
     public function get(string $rota, string $controller, string $action): bool
