@@ -4,22 +4,22 @@ declare(strict_types=1);
 
 namespace Src\Model;
 
-use PDO;
 use Src\Core\Database;
 
-abstract class Model extends Database
+abstract class Model
 {
     protected string $table = '';
     protected array $atributos = [];
-    protected PDO $conn;
+    private Database $pdo;
 
     public function __construct()
     {
-        $this->conn = Database::conn();
+        $db = new Database();
+        $this->pdo = $db;
     }
 
     public function select()
     {
-        // Select
+        var_dump($this->pdo->conn());
     }
 }

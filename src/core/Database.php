@@ -7,7 +7,7 @@ use PDOException;
 
 class Database
 {
-    protected static function conn(): PDO
+    public function conn(): PDO
     {
         try {
             $host = $_ENV['DB_SERVIDOR'];

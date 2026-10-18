@@ -12,6 +12,7 @@ abstract class Controller{
         if(!file_exists($arquivo)){
             http_response_code(500);
             echo "Erro: O arquivo '$arquivo' não existe.";
+            return;
         }
 
         extract($dados);
