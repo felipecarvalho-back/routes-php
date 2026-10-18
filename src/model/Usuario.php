@@ -6,5 +6,6 @@ namespace Src\Model;
 
 class Usuario extends Model
 {
-
+    protected string $table = 'usuarios';
+    protected array $atributos = ['nome', 'email'];
 }
