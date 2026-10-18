@@ -69,15 +69,21 @@ class Routes
                         unset($matches[0]);
                         $matches = array_values($matches);
 
-                        $parametroUrl = array_combine($indices, $matches) ?? [];
+                        if (count($indices) != count($matches)) {
+                            http_response_code(404);
+                            echo "404 - Rota não encontrada";
+                            return;
+                        }
+
+                        $parametroUrl = array_combine($indices, $matches);
                     }
+
                     $request = new Request($parametroUrl, $_POST);
                     $rotaEncontrada = $metodos[$metodoHttp];
                 }
             }
         }
 
-        die();
         if (! $rotaEncontrada) {
             http_response_code(404);
             echo "404 - Rota não encontrada";
