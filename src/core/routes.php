@@ -45,7 +45,7 @@ class Routes
         foreach ($this->routes as $rotaCadastrada => $metodos) {
             $rotaRegex = preg_replace('/\{([^}]+)\}/', '(?P<$1>[a-zA-Z0-9_-]+)', $rotaCadastrada);
 
-            if (preg_match('#^' . $rotaRegex . '$#', $this->url, $matches)) {
+            if (preg_match('#^'.$rotaRegex.'$#', $this->url, $matches)) {
                 if (isset($metodos[$metodoHttp])) {
                     $parametroUrl = array_filter($matches, 'is_string', ARRAY_FILTER_USE_KEY);
                     $rotaEncontrada = $metodos[$metodoHttp];
@@ -61,7 +61,7 @@ class Routes
         }
 
         $nomeController = $rotaEncontrada['controller'];
-        $nomeCompletoDaClasse = "\\Src\\Controller\\" . $nomeController;
+        $nomeCompletoDaClasse = "\\Src\\Controller\\".$nomeController;
         $funcao = $rotaEncontrada['action'];
 
         try {
@@ -75,11 +75,12 @@ class Routes
             }
 
             $request = new Request($parametroUrl, $_POST);
+            $response = new Response();
 
-            $controller->$funcao($request);
+            $controller->$funcao($request, $response);
         } catch (\Throwable $e) {
             http_response_code(500);
-            echo "Erro ao processar requisição: " . $e->getMessage();
+            echo "Erro ao processar requisição: ".$e->getMessage();
         }
     }
 }
